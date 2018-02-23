@@ -1,36 +1,99 @@
+/*
+ * Coded by: Jules Rodriguez
+ * Subject/Section: CS 145 GRAD
+ * 
+ * 
+*/
 package CS145ME4RodriguezJules;
-
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
 	public static void main(String args[]) {
-		Scanner nameObj = new Scanner(System.in);
-		String msg = "", reply = "", name = "";
+		String ipAddress = "127.0.0.1";
+		int port = 8888;
+		
 		try {
 			System.out.println("Client tries to connect to server...");
-			
-			Socket socket = new Socket("127.0.0.1", 8888);
-			
+			Socket socket;
 			System.out.println("Client connected!");
+			MyConnection conn; 
 			
-			System.out.print("Enter Message: MY NAME IS ");
-			name = nameObj.nextLine();
+			String userInput = "", response = "";
+			int inputCategory;
 			
-			MyConnection conn = new MyConnection(socket);
-			conn.sendName(name);  
+			while(true){
+				socket = new Socket(ipAddress, port);
+				conn = new MyConnection(socket);
+				userInput = getUserInput();
+				inputCategory = validateInput(userInput);
+				switch(inputCategory){
+					case 0:
+						conn.sendMessage(userInput); 
+						break;
+					case 1:
+						conn.sendMessage("TIME");
+						break;
+					case 2:
+						conn.sendMessage("JOKE TIME");
+						break;
+					case 3:
+						conn.sendMessage("QUIT");
+						break;
+					case -1:
+						conn.sendMessage("INVALID");
+						break;
+					default: 
+						conn.sendMessage("INVALID");
+						break;
+						
+				}
+				while(true){
+					response = conn.getMessage();
+					if (response.equals("end")) break;
+					System.out.println("Server: " + response);
+				}
+				if(userInput.equals("QUIT")) break;
+			}
 			
-			MyConnection connNew = new MyConnection(socket);
-			
-			String msg1 = "";			
-			msg1 = connNew.getMessage(); 
-			System.out.println(msg1);
 			
 		} catch (Exception e) {
 			System.out.println("Something bad happened!");
 			System.out.println(e);
 			e.printStackTrace();
 		}
-
 	}
+	
+	
+	private static String getUserInput(){		
+		Scanner msgObj = new Scanner(System.in);
+		
+		System.out.print("Enter Message: ");		
+		
+		return msgObj.nextLine();
+	}
+	
+	private static String getResponse(MyConnection conn){
+		return conn.getMessage();
+	}
+	
+	private static int validateInput(String msg){
+		
+		if(msg.contains("MY NAME IS ")){
+			return 0;
+		}else{
+			switch(msg){
+				case "TIME":
+					return 1;			
+				case "JOKE TIME":
+					return 2;
+				case "QUIT":
+					return 3;
+				default:
+					return -1;
+			}
+		}
+	}
+	
+	
 }

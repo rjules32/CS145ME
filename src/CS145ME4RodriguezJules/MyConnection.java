@@ -48,7 +48,7 @@ public class MyConnection {
 	
 	public boolean sendName(String name) {
 		try {
-			this.out.println("Server: Hello, " + name);
+			this.out.println("Server: Hello, 1" + name);
 			this.out.flush();
 			return true;
 		} catch (Exception e) {
