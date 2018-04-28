@@ -63,8 +63,7 @@ public class MyServer {
 		int counter = 0;
 		while (counter < 1) {
 			msg = conn.getMessage();
-			if (msg.isEmpty())
-				counter++;
+			if (msg.isEmpty()) counter++;
 			arrMsg.add(msg);
 			System.out.println(msg);
 		}
@@ -90,8 +89,8 @@ public class MyServer {
 				conn.sendMessage(responseHeader);
 
 				// Send File
-				conn.sendMessage(getFile(requestedFile));				
-				
+				//conn.sendMessage(getFile(requestedFile));				
+				conn.sendByte(requestedFile);
 				
 			} else {
 				//Send Response Header
@@ -107,10 +106,14 @@ public class MyServer {
 
 	private static String getResponseHeader(int status, String file) {
 		String header = "", contentType = "";
-		String fileExt = file.substring(file.lastIndexOf("."));
+		String fileExt = file.substring(file.lastIndexOf(".") + 1);
+		System.out.println(fileExt);
 		switch(fileExt) {
-			case "jpg":
+			case "jpeg":
 				contentType = "image/jpeg";
+				break;
+			case "css":
+				contentType = "text/css";
 				break;
 			case "html":
 				contentType = "text/html";
@@ -118,10 +121,11 @@ public class MyServer {
 			default:
 				contentType = "text/html";
 		}
+		System.out.println(contentType);
 		File fp = new File(file);
 		if(status == 200) {
 			header = "HTTP/1.1 200 OK \n" + 
-					"Connection close \n" + 
+					"Connection: close \n" + 
 					"Date: " + new Date().toString() + " \n" +
 					"Content-Length: " + fp.length() + "\n" + 
 					"Content-Type: " + contentType + " \n" + 
@@ -130,7 +134,7 @@ public class MyServer {
 
 			File errFp = new File(System.getProperty("user.dir") + "/error.html");
 			header = "HTTP/1.1 404 Not Found \n" + 
-					"Connection close \n" + 
+					"Connection: close \n" + 
 					"Date: " + new Date().toString() + " \n" +
 					"Content-Length: " + errFp.length() + "\n" + 
 					"Content-Type: text/html \n" + 

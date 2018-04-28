@@ -1,7 +1,12 @@
 package CS145MP2RodriguezJules;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -10,6 +15,8 @@ public class MyConnection {
 	Socket s;
 	BufferedReader in;
 	PrintWriter out;
+	BufferedInputStream bis = null;
+	OutputStream os = null;
 
 	public MyConnection(Socket s) {
 		try {
@@ -48,42 +55,34 @@ public class MyConnection {
 			return null;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public boolean sendName(String name) {
+
+	public boolean sendByte(String file) throws IOException {
 		try {
-			this.out.println("Server: Hello, 1" + name);
-			this.out.flush();
+			File fp = new File(file);
+			byte[] arrByte = new byte[(int) fp.length()];
+			bis = new BufferedInputStream(new FileInputStream(fp));
+			bis.read(arrByte, 0, arrByte.length);
+			os = s.getOutputStream();
+
+			System.out.println("Sending " + file + "(" + arrByte.length + " bytes)");
+
+			os.write(arrByte, 0, arrByte.length);
+			os.flush();
+			System.out.println("Done.");
+			
 			return true;
 		} catch (Exception e) {
 			System.out.println("Something bad happend!");
 			System.out.println(e);
 			e.printStackTrace();
 			return false;
+
+		}finally {
+			if (bis != null) bis.close();
+	       	if (os != null) os.close();
+
 		}
+
 	}
 
-	public boolean sendHello(String name) {
-		try {
-			this.out.println("Server: Hello, " + name);
-			this.out.flush();
-			return true;
-		} catch (Exception e) {
-			System.out.println("Something bad happend!");
-			System.out.println(e);
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	
 }
