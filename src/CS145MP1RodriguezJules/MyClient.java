@@ -1,3 +1,5 @@
+package CS145MP1RodriguezJules;
+
 /*
  * Coded by: Jules Rodriguez
  * Subject/Section: CS 145 GRAD
@@ -62,29 +64,9 @@ public class MyClient {
 				}
 				while(true){
 					response = conn.getMessage();
-					if(response.contains("sending file:")){
-						String clientPath = System.getProperty("user.dir");
-						String file = response.replace("sending file: ", "");
-						
-						File fout = new File(clientPath + "\\" + file);
-						PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(fout)));
-						
-						String content = "";
-						while(true){
-							content = conn.getMessage();
-							if(content.equals("EOF")) break;
-							out.println(content);
-							out.flush();
-						}
-						out.close();
-						System.out.println("Server: " + file + " is saved in " + clientPath);
-						
-					}else {
-						if(response.equals("provide your pwd")) conn.sendMessage(System.getProperty("user.dir"));		
-						if (response.equals("end")) break;
-						if(!response.equals("provide your pwd")) System.out.println("Server: " + response);
-							
-					}
+					if(response.equals("provide your pwd")) conn.sendMessage(System.getProperty("user.dir"));
+					if (response.equals("end")) break;
+					if(!response.equals("provide your pwd")) System.out.println("Server: " + response);
 				}
 				if(userInput.equals("QUIT")) break;
 			}

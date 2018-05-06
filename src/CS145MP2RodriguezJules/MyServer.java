@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +48,6 @@ public class MyServer {
 				e.printStackTrace();
 
 			} finally {
-				System.out.println("--Socket Closing...--");
 				socket.close();
 				System.out.println("--Socket Closed--");
 			}
@@ -88,8 +88,7 @@ public class MyServer {
 				responseHeader = getResponseHeader(200, requestedFile);
 				conn.sendMessage(responseHeader);
 
-				// Send File
-				//conn.sendMessage(getFile(requestedFile));				
+				// Send File			
 				conn.sendByte(requestedFile);
 				
 			} else {
@@ -107,10 +106,18 @@ public class MyServer {
 	private static String getResponseHeader(int status, String file) {
 		String header = "", contentType = "";
 		String fileExt = file.substring(file.lastIndexOf(".") + 1);
-		System.out.println(fileExt);
 		switch(fileExt) {
 			case "jpeg":
 				contentType = "image/jpeg";
+				break;
+			case "jpg":
+				contentType = "image/jpeg";
+				break;
+			case "png":
+				contentType = "image/png";
+				break;
+			case "gif":
+				contentType = "image/gif";
 				break;
 			case "css":
 				contentType = "text/css";
@@ -121,7 +128,6 @@ public class MyServer {
 			default:
 				contentType = "text/html";
 		}
-		System.out.println(contentType);
 		File fp = new File(file);
 		if(status == 200) {
 			header = "HTTP/1.1 200 OK \n" + 

@@ -1,3 +1,6 @@
+package CS145MP1RodriguezJules;
+
+
 /*
  * Coded by: Jules Rodriguez
  * Subject/Section: CS 145 GRAD
@@ -61,31 +64,36 @@ public class MyServer {
 							InputStream is = new FileInputStream(fp);
 							BufferedReader in = new BufferedReader(new InputStreamReader(is));
 							
-							conn.sendMessage("sending file: " + file);							
+							conn.sendMessage("provide your pwd");
+							String clientPWD = conn.getMessage();
+							
+							File fout = new File(clientPWD + "\\" + file);
+							PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(fout)));
 													
 							String content = "";
 							while (content != null) {
 								content = in.readLine();
 								if(content == null) break;
-								conn.sendMessage(content);
+								System.out.println(content);
+								out.println(content);
+								out.flush();
 							}			
 							in.close();	
-							conn.sendMessage("EOF");
+							out.close();
+							response = "File saved in " + clientPWD;
 						}else{
 							response = "File type is not text (.txt)";
-							conn.sendMessage(response);
 						}	
 					} else {
 						response = "This file does not exist.";
-						conn.sendMessage(response);
 					}
-					
+					conn.sendMessage(response);
 					conn.sendMessage("end");
 				}else if (msg.equals("PWD")){
 					conn.sendMessage("The current directory is -- " + currentPath);
 					conn.sendMessage("end");
 					
-				}else if (msg.contains("CD ..")){
+				}else if (msg.equals("CD ..")){
 					int lastIndex = (currentPath.lastIndexOf("/") == -1)? currentPath.lastIndexOf("\\") : currentPath.lastIndexOf("/");
 					if(lastIndex == -1){
 						currentPath = currentPath + "\\";
