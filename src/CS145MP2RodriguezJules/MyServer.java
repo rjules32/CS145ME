@@ -79,7 +79,7 @@ public class MyServer {
 
 			String[] requestHeader = requestLine.split(" ");
 			String requestedFile = System.getProperty("user.dir") + requestHeader[1];
-			System.out.println(requestedFile);
+		//	System.out.println(requestedFile);
 
 			File fp = new File(requestedFile);
 			
@@ -87,6 +87,7 @@ public class MyServer {
 				// Send Response Header
 				responseHeader = getResponseHeader(200, requestedFile);
 				conn.sendMessage(responseHeader);
+				System.out.println(responseHeader);
 
 				// Send File			
 				conn.sendByte(requestedFile);
@@ -133,8 +134,8 @@ public class MyServer {
 			header = "HTTP/1.1 200 OK \n" + 
 					"Connection: close \n" + 
 					"Date: " + new Date().toString() + " \n" +
-					"Content-Length: " + fp.length() + "\n" + 
 					"Content-Type: " + contentType + " \n" + 
+					"Content-Length: " + fp.length() + " \n" + 
 					"\r\n";
 		} else {
 
@@ -171,19 +172,6 @@ public class MyServer {
 
 			return fileContent;
 		}
-
-		InputStream is = new FileInputStream(new File(System.getProperty("user.dir") + "/error.html"));
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-
-		while (content != null) {
-			content = in.readLine();
-			System.out.println(content);
-			if (content == null)
-				break;
-			fileContent += content;
-			System.out.println(fileContent);
-		}
-		in.close();
 
 		return fileContent;
 	}
